@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Debug builds: GWP-ASan on every allocation-sampling slot in all processes (incl. :engine), so heap
-     corruption (suspected in native addons / OpenSSL) produces a precise tombstone "Cause:" line. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-    <application android:gwpAsanMode="always" tools:targetApi="30" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <!-- Keep upstream debug heap-corruption diagnostics enabled. -->
+    <application android:gwpAsanMode="always" tools:targetApi="30">
+        <activity android:name=".feature.settings.LocalAdbActivity"
+            android:exported="true" android:permission="android.permission.DUMP"
+            tools:replace="android:exported" />
+        <receiver android:name=".feature.settings.LocalAdbValidationReceiver"
+            android:exported="true" android:permission="android.permission.DUMP" />
+    </application>
 </manifest>

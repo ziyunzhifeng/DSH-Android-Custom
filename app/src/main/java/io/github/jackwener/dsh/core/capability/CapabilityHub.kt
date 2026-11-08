@@ -16,6 +16,7 @@ import io.github.jackwener.dsh.core.capability.tools.NotificationTools
 import io.github.jackwener.dsh.core.capability.tools.RuleTools
 import io.github.jackwener.dsh.core.capability.tools.ScreenTools
 import io.github.jackwener.dsh.core.capability.tools.SystemTools
+import io.github.jackwener.dsh.core.capability.tools.WeChatTools
 import io.github.jackwener.dsh.core.data.RuleDao
 import io.github.jackwener.dsh.core.data.SettingsRepository
 import io.github.jackwener.dsh.core.engine.JsonRpcException
@@ -76,6 +77,7 @@ class CapabilityHub @Inject constructor(
     files: FileTools, apps: AppTools, screen: ScreenTools, system: SystemTools, notifications: NotificationTools,
     comms: CommsTools, media: MediaTools, clipboard: ClipboardTools, browser: BrowserTools, ruleTools: RuleTools,
     knowledge: KnowledgeTools,
+    wechat: WeChatTools,
     private val shellGate: ShellGate,
     private val guard: ActionGuard,
     private val agentScreen: AgentScreen,
@@ -83,7 +85,7 @@ class CapabilityHub @Inject constructor(
     private val experience: AppExperience,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    val allTools: Map<String, Tool> = listOf(files, apps, screen, system, notifications, comms, media, clipboard, browser, ruleTools, knowledge)
+    val allTools: Map<String, Tool> = listOf(files, apps, screen, system, notifications, comms, media, clipboard, browser, ruleTools, knowledge, wechat)
         .flatMap { it.tools }.associateBy { it.name }
     @Volatile private var bridge: JsonRpcPeer? = null
     private val liveSeq = java.util.concurrent.atomic.AtomicLong()
@@ -193,6 +195,7 @@ class CapabilityHub @Inject constructor(
         val sessionId = params["sessionId"]?.jsonPrimitive?.contentOrNull ?: ""
         val callId = params["callId"]?.jsonPrimitive?.contentOrNull ?: ""
         val args = (params["args"] as? JsonObject) ?: JsonObject(emptyMap())
+        if (!io.github.jackwener.dsh.core.wechat.WeChatScanPolicy.allows(sessionId, name)) return ToolResult.error("not_authorized", "This collection session only allows its WeChat scan tools.")
         val tool = allTools[name] ?: return ToolResult.error("invalid_args", "unknown tool $name")
         val group = ToolGroup.of(tool.descriptor.group)
         if (group !in settings.current().enabledGroups) return ToolResult.error("not_authorized",

@@ -101,7 +101,8 @@ for p in "$JS_DIR"/patches/*.patch; do
     [[ -f "$NM/$target" ]] && continue
     stem="${target%-*.js}"
     if [[ "$stem" != "$target" && "$target" =~ -[A-Za-z0-9_]{8}\.js$ ]]; then
-      mapfile -t found < <(cd "$NM" && compgen -G "$stem-*.js" || true)
+      found=()
+      while IFS= read -r match; do found+=("$match"); done < <(cd "$NM" && compgen -G "$stem-*.js" || true)
       if [[ ${#found[@]} -eq 1 ]]; then
         log "  $target -> ${found[0]} (content-hashed chunk renamed)"
         sed -i "s#^\(---\|+++\) \([ab]\)/$target#\1 \2/${found[0]}#" "$PATCH_TMP/$name"
@@ -124,7 +125,8 @@ rm_pkg() { for d in "$@"; do [[ -e "$NM/$d" ]] && rm -rf "${NM:?}/$d"; done; ret
 rm_pkg @deepseek-ai/libreoffice-kit-wasm
 # The profile disables `llm-pi-ai` (DeepSeek-only product): pi-ai and the provider SDKs only it
 # reaches (openai, @anthropic-ai, @google/genai, @aws-sdk, @smithy, …; computed from the lockfile).
-mapfile -t pi_only < <(node "$JS_DIR/scripts/unreachable.mjs" "$STAGE/package-lock.json" @earendil-works/pi-ai)
+pi_only=()
+while IFS= read -r key; do pi_only+=("$key"); done < <(node "$JS_DIR/scripts/unreachable.mjs" "$STAGE/package-lock.json" @earendil-works/pi-ai)
 for key in "${pi_only[@]}"; do [[ -e "$STAGE/$key" ]] && rm -rf "${STAGE:?}/$key"; done
 log "pruned ${#pi_only[@]} packages only reachable through @earendil-works/pi-ai"
 # Browser client UI and the experimental inspector (Web/desktop surfaces only; boot verified without them).

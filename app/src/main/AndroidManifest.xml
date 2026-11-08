@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+    <uses-permission android:name="android.permission.USE_LOOPBACK_INTERFACE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -94,6 +96,15 @@
         android:largeHeap="true"
         android:extractNativeLibs="true"
         tools:targetApi="36">
+
+        <service android:name=".core.adb.AdbPairingService" android:exported="false" android:foregroundServiceType="shortService" />
+        <service android:name=".core.wechat.WeChatScanService" android:exported="false" android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-started WeChat reading collection: on-device ADB, screenshots and database checkpoints while WeChat is visible" />
+        </service>
+
+        <activity android:name=".feature.settings.WeChatCollectionActivity" android:exported="false" />
+        <activity android:name=".feature.settings.LocalAdbActivity" android:exported="false" />
 
         <activity
             android:name=".MainActivity"

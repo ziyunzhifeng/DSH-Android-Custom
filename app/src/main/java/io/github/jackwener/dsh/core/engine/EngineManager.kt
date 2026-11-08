@@ -165,6 +165,11 @@ class EngineManager @Inject constructor(
     /** The running engine's channel, without starting one (null while stopped or starting). */
     fun sdkIfReady(): JsonRpcPeer? = sdk?.takeIf { state.value == EngineState.Ready }
 
+    /** Fast product preflight, without extracting or starting the runtime. */
+    suspend fun requireModelCredentials() {
+        if (settings.current().choice.isDeepSeek && secrets.read() == null && !account.get().signedIn) throw NoCredentialsException()
+    }
+
     suspend fun sdk(): JsonRpcPeer = mutex.withLock {
         val st = settings.current()
         val hasKey = secrets.read() != null

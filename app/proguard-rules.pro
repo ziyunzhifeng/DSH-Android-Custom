@@ -10,3 +10,5 @@
 -dontwarn org.bouncycastle.**
 -dontwarn com.gemalto.jp2.**
 -dontwarn com.tom_roush.pdfbox.filter.**
+
+-keep class io.github.jackwener.dsh.core.adb.PairingContext { *; }

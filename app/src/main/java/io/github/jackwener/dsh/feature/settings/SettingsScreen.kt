@@ -446,6 +446,12 @@ private fun PhoneSection(vm: SettingsViewModel, onNotificationApps: () -> Unit) 
         SettingsRow(stringResource(R.string.keep_alive), keepAliveHint(kind, zh), onClick = { KeepAliveLauncher.open(context, kind) },
             trailing = { DIcon(R.drawable.dsw_chevron_right_outline, size = 14.dp, tint = c.labelTertiary) })
     }
+    SettingsGroupTitle(stringResource(R.string.adb_title))
+    SettingsCard {
+        SettingsRow(stringResource(R.string.adb_title), stringResource(R.string.adb_intro), divider = false,
+            onClick = { context.startActivity(Intent(context, LocalAdbActivity::class.java)) },
+            trailing = { DIcon(R.drawable.dsw_chevron_right_outline, size = 14.dp, tint = c.labelTertiary) })
+    }
     SettingsGroupTitle(stringResource(R.string.shz_group))
     ShellAccessCard()
     val s by vm.settings.collectAsStateWithLifecycle()

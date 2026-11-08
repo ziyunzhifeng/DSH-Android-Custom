@@ -55,7 +55,7 @@ class CapabilityListTest {
     private fun listed(): List<ToolDescriptor> = listOf(
         FileTools::class.java, AppTools::class.java, ScreenTools::class.java, SystemTools::class.java, NotificationTools::class.java,
         CommsTools::class.java, MediaTools::class.java, ClipboardTools::class.java, BrowserTools::class.java, RuleTools::class.java,
-        KnowledgeTools::class.java,
+        KnowledgeTools::class.java, io.github.jackwener.dsh.core.capability.tools.WeChatTools::class.java,
     ).flatMap { build(it).tools }.map { CapabilityHub.listed(it) }
 
     @Test fun `descriptors stay within the token budget`() {

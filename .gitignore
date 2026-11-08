@@ -12,3 +12,6 @@ node_modules/
 secrets/
 app/schemas/
 /toolchains
+
+# Android external native build intermediates
+.cxx/

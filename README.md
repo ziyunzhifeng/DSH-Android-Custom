@@ -153,6 +153,7 @@ docs/       架构说明、引擎契约、设计 token、截图
 
 - [架构](docs/ARCHITECTURE.md)
 - [引擎契约（App ↔ dsh）](docs/ENGINE-CONTRACT.md)
+- [Custom：本机 ADB 与微信文章读取](docs/LOCAL-ADB-WECHAT.md)
 - [设计 token](docs/design-tokens.md)
 - [发布流程（含 App 内更新的 update.json）](docs/RELEASE.md)
 
@@ -174,3 +175,5 @@ docs/       架构说明、引擎契约、设计 token、截图
 ## 许可证
 
 [Apache License 2.0](LICENSE)。内置的第三方组件（Node.js、dsh、dsh-llm-service-lite、Shizuku、ripgrep 等）遵循各自的许可证。
+
+公众号扫描与本机热榜：[使用说明与数据口径](docs/WECHAT-COLLECTION.md)。

@@ -452,7 +452,7 @@ class SessionStore @Inject constructor(
     }
 
     private suspend fun sendMode(sdk: JsonRpcPeer, sessionId: String, modeId: String?) {
-        val mode = settings.current().mode(modeId)
+        val mode = if (io.github.jackwener.dsh.core.wechat.WeChatScanPolicy.applies(sessionId)) io.github.jackwener.dsh.core.wechat.WeChatScanPolicy.mode else settings.current().mode(modeId)
         runCatching {
             sdk.request("android/session/mode", buildJsonObject {
                 put("sessionId", sessionId)
@@ -610,6 +610,8 @@ class SessionStore @Inject constructor(
         val sessionId = p.s("sessionId") ?: throw JsonRpcException(-32602, "no session")
         // A subagent's own id has no rule prefix; the conversation it belongs to (its root) decides.
         val owner = rootOf(sessionId)
+        if (!io.github.jackwener.dsh.core.wechat.WeChatScanPolicy.allowsUserQuestions(owner))
+            throw JsonRpcException(-32000, "WeChat scans use the collection page controls. Do not ask questions. If paused or stopped, end this turn; the user resumes from that page with a new prompt.")
         if (ruleIdOfSession(owner) != null) throw JsonRpcException(-32000, "PROVIDER_ERROR: unattended session cannot ask the user")
         val key = p.s("requestId") ?: UUID.randomUUID().toString()
         val qs = p.a("questions")?.mapNotNull { el ->

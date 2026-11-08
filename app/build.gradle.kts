@@ -15,6 +15,13 @@ fun shizukuPin(name: String): String =
 
 android {
     namespace = "io.github.jackwener.dsh"
+    ndkVersion = "27.0.12077973"
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/pairing/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
     compileSdk {
         version = release(37) { minorApiLevel = 2 }
     }
@@ -49,6 +56,10 @@ android {
         }
     }
     buildTypes {
+        debug {
+            applicationIdSuffix = ".custom"
+            versionNameSuffix = "-local-adb"
+        }
         release {
             // R8 stays off until a minified build has been verified on a device.
             isMinifyEnabled = false
@@ -70,6 +81,7 @@ android {
         compose = true
         aidl = true
         buildConfig = true
+        prefab = true
     }
     packaging {
         jniLibs {
@@ -104,6 +116,9 @@ kotlin { jvmToolchain(21) }
 room { schemaDirectory("$projectDir/schemas") }
 
 dependencies {
+    implementation("org.conscrypt:conscrypt-android:2.8.0")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.81")
+    implementation("io.github.vvb2060.ndk:boringssl:20250114")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
@@ -146,3 +161,9 @@ dependencies {
     // Offline text recognition (Chinese + Latin, bundled model) for custom-drawn screens without readable nodes.
     implementation(libs.mlkit.text.chinese)
 }
+
+// Host tests need the desktop JNI provider; the APK keeps the Android provider.
+configurations.matching { it.name.endsWith("UnitTestRuntimeClasspath") }.configureEach {
+    exclude(group = "org.conscrypt", module = "conscrypt-android")
+}
+dependencies { testRuntimeOnly("org.conscrypt:conscrypt-openjdk-uber:2.6.2") }
